@@ -1,0 +1,1 @@
+{"data": [{"file_name": "finalized_model.sav", "db_name": "test", "table_name": "stud", "predict_names": ["m4"], "column_names": ["m1", "m2"]}]}

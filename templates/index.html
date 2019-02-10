@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+    <div id="pass">
+    Password:<input type="text" name="password" id="password"><br>
+    <button onclick=st()  name="sub" id="sub">submit</button>
+    </div>
+	<select id="db">
+	</select>
+    <select id="tbl">        
+    </select>
+    <div id="labels">
+    </div>
+    <button onclick="f1()" id="b1">Proceed</button>
+    <div id="predict"></div>
+    <select id="param">
+        <option value="lambda">lambda</option>
+    </select>
+    <div id="result" name="result">
+        <b>RESULT</b>
+    </div>
+    File name:<input type="text" name="file" id="file">
+    <br >
+    <br >
+ <!--    <input type="text" multiple class="multipleInputDynamicWithInitialValue" data-load-once>
+    <input
+    type="text"
+    multiple
+    class="multipleInputDynamicWithInitialValue"
+    value="Algeria,Angola"
+    data-initial-value='[{"text": "Algeria", "value" : "Algeria"}, {"text": "Angola", "value" : "Angola"}]'
+    data-url="demo/data.json"
+    data-load-once="true"
+    name="language"/>
+    function addLabelValue()
+    {
+        var ip = $('#inp1');
+        ip.type="text";
+
+    } -->
+    <button id="submit" name="submit">Submit</button>
+<script>
+    var pred = [];
+/*$( document ).ready(function() {
+    console.log( "ready!" ); 
+    f();
+
+});*/
+function st(){
+    //$('#db').hide();
+    //$('#tbl').hide();
+    $('#labels').hide();
+    f();
+}
+function f()
+{
+    $('#tbl').show();
+    $('#labels').hide();
+    $('#predict').hide(); 
+    $('#b1').hide();
+    $('id').hide();
+    $('#result').hide();
+    $('#password').hide();
+    //console.log("vvslbkjvnfjvkdsnvmdn");
+    
+    console.log($('#password').val())
+    var  data = {"flag" : "1","password": $('#password').val()};
+	$.ajax({ 
+        url: '/', 
+        type: 'POST', 
+        data: JSON.stringify(data,null , '') ,
+        contentType: 'application/json;charset=UTF-8',
+        success: function(response){ 
+        	console.log(response);
+            
+            response=response.substr(1,response.length-2);
+            response= response.replace(/'/g,'');
+            response = response.trim();
+            response = response.split(",");
+            for(i=0;i<response.length;++i)
+            {
+                console.log(response[i]);
+                response[i] = response[i].trim();
+               $("#db").append(new Option(response[i], response[i]));
+            }
+            //$('#main').text(response) 
+        }
+    });
+
+}	
+$('#db').on('change',function ()
+{
+    
+    
+    var  data = {"flag" : "2","db_name" : $('#db').val(),"password": $('#password').val()};
+    $('#pass').hide();
+    $.ajax({ 
+        url: '/', 
+        type: 'POST', 
+        data: JSON.stringify(data,null , '') ,
+        contentType: 'application/json;charset=UTF-8',
+        success: function(response){
+            //
+            $('#tbl').show();
+            console.log(response); 
+            response=response.substr(1,response.length-2);
+            response= response.replace(/'/g,'');
+            response = response.split(",");
+            for(i=0;i<response.length;++i)
+            {
+                console.log(response[i]);
+                response[i] = response[i].trim();
+               $("#tbl").append(new Option(response[i], response[i]));
+            }
+        } 
+    });
+
+});
+
+$('#tbl').on('change',function(){
+	
+    $('#labels').show();
+    $('#b1').show();
+//    $('#predict').show();
+    db_name = $('#db').val();
+    tbl_name = $('#tbl').val();
+    var  data = {"flag" : "3","db_name" : db_name , "tbl_name" : tbl_name,"password": $('#password').val()};
+    $.ajax({ 
+        url: '/', 
+        type: 'POST', 
+        data: JSON.stringify(data,null , '') ,
+        contentType: 'application/json;charset=UTF-8',
+        success: function(response){ 
+            response=response.substr(1,response.length-2);
+            response= response.replace(/'/g,'');
+            response = response.split(",");
+            for(i=0;i<response.length;i++){
+                response[i] = response[i].trim();
+                console.log(response[i]);
+                pred[i] = response[i];
+                var p=document.getElementById('labels');
+                var chk=document.createElement('input')
+                chk.type = "checkbox";
+                chk.name = "label";
+                chk.value = response[i];
+                chk.id = "id";
+                var label = document.createTextNode(response[i]);
+                //chk.appendchild(label);
+                p.appendChild(chk);
+                p.appendChild(label)             
+            }
+            
+            /*function add2(){
+            for(i=0;i<response.length;i++){
+                  response[i] = response[i].trim();
+                console.log(response[i]);
+                var p=document.getElementById('predict');
+                var chk=document.createElement('input')
+                chk.type = "checkbox";
+                chk.name = "predict";
+                chk.value = response[i];
+                chk.id = "id";
+                var label = document.createTextNode(response[i]);
+                //chk.appendchild(label);
+                p.appendChild(chk);
+                p.appendChild(label)
+                //p.appendchild(label);
+             }
+            }*/
+
+        } 
+    });
+});
+function f1(){
+    $('#b1').hide();
+    $('#predict').show();
+    var chked = document.getElementsByName('label');
+    for(j=0;j<chked.length;++j)
+    {
+       // console.log(chked[j]);
+        $.each($("input[name='label']:checked"), function(){            
+            if(pred.indexOf($(this).val()) != -1)
+            {
+            pred.splice(pred.indexOf($(this).val()),1);       
+            }
+            //clm_names.push();
+        }); 
+    }
+    var p=document.getElementById('predict');
+    var chk=document.createElement('select')
+    chk.name = "predict";
+    chk.id = "id1";
+     
+    for(i=0;i<pred.length;++i)
+    {
+        var opt1 = document.createElement('option');
+        opt1.value = pred[i];
+        var label = document.createTextNode(pred[i]);
+        opt1.appendChild(label);
+        chk.appendChild(opt1);     
+    }
+    p.appendChild(chk);
+                
+}
+$('#submit').on('click',function()
+{
+	$('#result').show(); 
+
+    db_name = $('#db').val();
+	tbl_name = $('#tbl').val();
+    file_name=$('#file').val();
+	var clm_names = [] , pred_names = [];
+    $.each($("input[name='label']:checked"), function(){            
+        clm_names.push($(this).val());
+    });
+    pred_names.push($('#id1').val());
+    console.log("file name    ",file_name);
+
+    console.log("hello    ",clm_names)
+    console.log("hello2    ",pred_names)
+    var param = $('#param').val();
+    var data = {
+        "flag":"4",
+        "db_name" : db_name,
+        "tbl_name" : tbl_name,   
+        "clm_names" : clm_names,
+        "pred_names" : pred_names,
+        "file_name":file_name,
+        "param" : param,"password": $('#password').val()
+    };
+    console.log(data); 
+    $.ajax({ 
+        url: '/', 
+        type: 'POST', 
+        data: JSON.stringify(data,null , '') ,
+        contentType: 'application/json;charset=UTF-8',
+        success: function(response){
+            //$('#tbl').show();
+            console.log(response); 
+            response=response.substr(1,response.length-2);
+            response= response.replace(/'/g,'');
+            response = response.split(","); 
+            document.getElementById("result").innerHTML+=response;          
+        } 
+    });
+	
+
+});   
+
+</script>
+</body>
